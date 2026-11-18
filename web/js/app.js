@@ -90,7 +90,7 @@ const ITENS_MENU = [
 ];
 
 function marca() {
-  return `<a class="marca" href="/inicio.html"><b>${icone("folha")}</b>Folha de Pagamento</a>`;
+  return `<a class="marca" href="/inicio.html"><img src="/img/payflow-logo.svg" alt="Payflow" width="124" height="30"></a>`;
 }
 
 export function montarPagina(ativa, { titulo, subtitulo = "", acoes = "" } = {}) {
@@ -117,7 +117,7 @@ export function montarPagina(ativa, { titulo, subtitulo = "", acoes = "" } = {})
       </div>
     </div>
     <div class="avisos" id="avisos" aria-live="polite"></div>`;
-  document.title = `${titulo} · Folha de Pagamento`;
+  document.title = `${titulo} · Payflow`;
 
   const app = document.querySelector(".app");
   document.getElementById("abrir-menu").addEventListener("click", (e) => {
