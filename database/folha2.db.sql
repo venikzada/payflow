@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS "funcionarios" (
 	"cargo"	TEXT NOT NULL,
 	"salario_base"	REAL NOT NULL,
 	"empresa_id"	INTEGER,
+	"email"	TEXT,
+	"ativo"	INTEGER NOT NULL DEFAULT 1,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "funcionarios_beneficios" (
@@ -115,13 +117,14 @@ INSERT INTO "beneficios" VALUES (2,'Vale Refeição','Benefício destinado à al
 INSERT INTO "beneficios" VALUES (3,'Vale Alimentação','Benefício destinado à compra de alimentos','ALIMENTACAO',400.0,1);
 INSERT INTO "beneficios" VALUES (4,'Plano de Saúde','Assistência médica oferecida ao funcionário','SAUDE',250.0,1);
 INSERT INTO "beneficios" VALUES (5,'Plano Odontológico','Assistência odontológica oferecida ao funcionário','SAUDE',50.0,1);
+INSERT INTO "beneficios" VALUES (6,'Vale Combustível','Benefício destinado ao abastecimento do veículo do funcionário','TRANSPORTE',200.0,1);
 INSERT INTO "cargos" VALUES (1,'Auxiliar Administrativo','Profissional responsável por atividades administrativas');
 INSERT INTO "cargos" VALUES (2,'Analista Administrativo','Profissional responsável por atividades de análise e suporte administrativo');
 INSERT INTO "empresas" VALUES (1,'Administracao de Facilities LTDA','Administracao de Facilities','12345678000199','contato@facilities.com.br','(31) 3333-4444','2026-10-03',1);
 INSERT INTO "folha_funcionarios" VALUES (1,1,1,2500.0,2727.27,2727.27,2627.27,212.14,2627.27,210.18,2415.13,0.0,312.14,2415.13,'CONFIRMADA');
 INSERT INTO "folhas_pagamento" VALUES (1,9,2026,'2026-09-30','ABERTA');
-INSERT INTO "funcionarios" VALUES (1,'João da Silva','11111111111','1995-05-20','2026-01-10','Auxiliar Administrativo',2500.0,1);
-INSERT INTO "funcionarios" VALUES (2,'Maria Oliveira','22222222222','1998-08-15','2026-02-05','Analista Administrativo',3500.0,1);
+INSERT INTO "funcionarios" VALUES (1,'João da Silva','52998224725','1995-05-20','2026-01-10','Auxiliar Administrativo',2500.0,1,'joao.silva@facilities.com.br',1);
+INSERT INTO "funcionarios" VALUES (2,'Maria Oliveira','16899535009','1998-08-15','2026-02-05','Analista Administrativo',3500.0,1,'maria.oliveira@facilities.com.br',1);
 INSERT INTO "funcionarios_beneficios" VALUES (1,1,1,300.0,150.0,'2026-01-10',NULL,1);
 INSERT INTO "funcionarios_beneficios" VALUES (2,1,2,500.0,50.0,'2026-01-10',NULL,1);
 INSERT INTO "funcionarios_beneficios" VALUES (3,1,4,250.0,100.0,'2026-01-10',NULL,1);
@@ -147,7 +150,8 @@ INSERT INTO "tipos_lancamento" VALUES (12,'IRPF','DESCONTO','Imposto de Renda Re
 INSERT INTO "tipos_lancamento" VALUES (13,'Falta','DESCONTO','Desconto referente a faltas',1,1,1,'SUBTRAI');
 INSERT INTO "tipos_lancamento" VALUES (14,'Atraso','DESCONTO','Desconto referente a atrasos',1,1,1,'SUBTRAI');
 INSERT INTO "tipos_lancamento" VALUES (15,'Adiantamento Salarial','DESCONTO','Adiantamento recebido anteriormente',0,0,0,'SOMA');
-INSERT INTO "usuarios" VALUES (1,1,'admin_facilities','123456','admin@facilities.com.br',1,'2026-10-03');
+INSERT INTO "tipos_lancamento" VALUES (16,'Benefício','DESCONTO','Desconto de benefício do funcionário',0,0,0,'SOMA');
+INSERT INTO "usuarios" VALUES (1,1,'admin_facilities','k+9pncshZD95MaVqkkSZGw==:1RAy5ZabPG/+3XVDjtjhbpFRPrnCh4VHvyocDo41kSE=','admin@facilities.com.br',1,'2026-10-03');
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_folha_funcionario_unico" ON "folha_funcionarios" (
 	"folha_id",
 	"funcionario_id"
