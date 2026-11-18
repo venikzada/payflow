@@ -125,3 +125,7 @@
 }
 
 @media (max-width: 1100px) { #linha-2 { grid-template-columns: 1fr !important; } }
+
+/* abas pequenas (ex.: Barras | Linhas no gráfico do Início) */
+.abas.abas-sm { margin: 0; padding: 3px; }
+.abas.abas-sm button { flex: none; height: 32px; padding: 0 14px; font-size: 13px; }
