@@ -9,9 +9,18 @@ final class ApiFolhas {
 	private ApiFolhas() {
 	}
 
+	// Lê um campo de horas/dias e já diz qual campo está errado se vier negativo
+	private static double quantidade(Requisicao r, String campo) {
+		double v = r.numero(campo);
+		if (v < 0) {
+			throw ErroNegocio.invalido(campo, "Horas extras, faltas e atrasos não podem ser negativos.");
+		}
+		return v;
+	}
+
 	private static CalculoFolha.Entrada entrada(Requisicao r) throws Exception {
-		return FolhaDAO.montarEntrada(r.conn, r.empresaId, r.inteiro("funcionario_id"), r.numero("he50"),
-				r.numero("he100"), r.numero("faltas"), r.numero("atrasos"));
+		return FolhaDAO.montarEntrada(r.conn, r.empresaId, r.inteiro("funcionario_id"), quantidade(r, "he50"),
+				quantidade(r, "he100"), quantidade(r, "faltas"), quantidade(r, "atrasos"));
 	}
 
 	static void registrar(Roteador rotas) {

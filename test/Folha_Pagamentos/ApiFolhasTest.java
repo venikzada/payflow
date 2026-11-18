@@ -44,6 +44,7 @@ class ApiFolhasTest {
 		var r = cli.post("/api/folhas/simular", "funcionario_id", "1", "faltas", "-1");
 		assertEquals(400, r.status());
 		assertTrue(r.tem("não podem ser negativos"));
+		assertTrue(r.tem("\"campo\":\"faltas\""), r.corpo());
 		var lixo = cli.post("/api/folhas/simular", "funcionario_id", "1", "atrasos", "abc");
 		assertEquals(400, lixo.status());
 		assertTrue(lixo.tem("\"campo\":\"atrasos\""));
