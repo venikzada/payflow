@@ -1,5 +1,5 @@
 /* ============================================================
-   Design system — Folha de Pagamento
+   Design system · Payflow
    Fonte da verdade: docs/superpowers/specs/assets/design-system-aprovado.html
    ============================================================ */
 
@@ -61,7 +61,7 @@ svg.i { width: 20px; height: 20px; flex: none; }
 .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--line); }
 .btn-danger { background: var(--bad-soft); color: var(--bad); }
 
-/* Shine Hover (21st.dev @shadcnspace) — só nos CTAs */
+/* Shine Hover (21st.dev @shadcnspace): só nos CTAs */
 .btn-ink::before, .btn-accent::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
   background-image: linear-gradient(45deg, transparent 25%, rgba(255,255,255,var(--shine)) 50%, transparent 75%, transparent 100%);
@@ -188,3 +188,10 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;utf8,
 .erro-caixa { padding: 16px; border-radius: var(--r-md); background: var(--bad-soft); color: var(--bad); font-size: 15px; }
 .aviso-caixa { padding: 14px 16px; border-radius: var(--r-md); background: var(--warn-soft); color: #7A5600; font-size: 15px; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .aviso-caixa a { font-weight: 500; }
+
+/* ---------- dica do gráfico de linhas ---------- */
+.grafico-dica { position: absolute; z-index: 5; pointer-events: none; background: #fff; border: 1px solid var(--line); border-radius: var(--r-btn);
+  box-shadow: 0 10px 24px rgba(0,0,0,.12); padding: 10px 12px; font-size: 13px; display: grid; gap: 4px; white-space: nowrap; }
+.grafico-dica b { font-weight: 600; }
+.grafico-dica i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.grafico-dica .num { font-weight: 500; margin-left: 6px; }

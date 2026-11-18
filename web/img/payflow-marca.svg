@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12.75 6 83.25 90" role="img" aria-label="Payflow">
+  <title>Payflow</title>
+  <defs>
+    <linearGradient id="bojo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7834F"/><stop offset="1" stop-color="#E9481A"/></linearGradient>
+    <linearGradient id="haste" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9C72"/><stop offset="1" stop-color="#F05A28"/></linearGradient>
+  </defs>
+  <path d="M31 47H53.75L39.5 92H16.75Z" fill="url(#haste)"/>
+  <path d="M26 10H66C82 10 92 21 92 36C92 51 81 62 66 62H50L53.75 47H64C71 47 75 42 75 36C75 30 71 25 64 25H22.25Z" fill="url(#bojo)"/>
+</svg>

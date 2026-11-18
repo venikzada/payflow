@@ -22,7 +22,7 @@ async function carregar() {
     ]);
     document.getElementById("titulo").textContent = f.nome;
     document.getElementById("subtitulo").textContent = f.cargo;
-    document.title = `${f.nome} · Folha de Pagamento`;
+    document.title = `${f.nome} · Payflow`;
 
     const acoes = document.getElementById("acoes");
     if (f.ativo) {

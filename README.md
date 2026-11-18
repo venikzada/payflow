@@ -1,4 +1,4 @@
-# Sistema de Folha de Pagamento
+# Payflow · Sistema de Folha de Pagamento
 
 Sistema de folha de pagamento em Java (console), com banco de dados SQLite, desenvolvido para o projeto final da disciplina de Garantia da Qualidade de Software (Una Contagem).
 

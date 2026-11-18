@@ -127,4 +127,12 @@ class ServidorTest {
 				"telefone", "(31) 3333-4444", "senha", "novasenha", "confirmacao", "novasenha").status());
 		assertEquals(200, cli.post("/api/acesso/entrar", "cnpj", "12345678000199", "senha", "novasenha").status());
 	}
+
+	// A foto da tela de login é JPEG
+	@Test
+	void entregaJpeg() {
+		var r = cli.get("/img/login.jpg");
+		assertEquals(200, r.status());
+		assertEquals("image/jpeg", r.headers().firstValue("Content-Type").orElse(""));
+	}
 }
