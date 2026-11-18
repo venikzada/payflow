@@ -115,8 +115,8 @@ class FolhaDAOTest {
 	@Test
 	void historicoMesTotais() throws Exception {
 		try (Connection c = BancoTeste.novo()) {
-			FolhaDAO.lancar(c, 1, 1, FolhaDAO.montarEntrada(c, 1, 1, 0, 0, 0, 0), 11, 2026);
-			var totais = (Map<String, Object>) FolhaDAO.historicoMes(c, 1, 11, 2026).get("totais");
+			FolhaDAO.lancar(c, 1, 1, FolhaDAO.montarEntrada(c, 1, 1, 0, 0, 0, 0), 12, 2026);
+			var totais = (Map<String, Object>) FolhaDAO.historicoMes(c, 1, 12, 2026).get("totais");
 			assertEquals(1, inteiro(totais.get("quantidade")));
 			assertEquals(1999.31, totais.get("liquido"));
 		}
@@ -125,10 +125,10 @@ class FolhaDAOTest {
 	@Test
 	void historicoFuncionarioMaisNovoPrimeiro() throws Exception {
 		try (Connection c = BancoTeste.novo()) {
-			FolhaDAO.lancar(c, 1, 1, FolhaDAO.montarEntrada(c, 1, 1, 0, 0, 0, 0), 11, 2026);
+			FolhaDAO.lancar(c, 1, 1, FolhaDAO.montarEntrada(c, 1, 1, 0, 0, 0, 0), 12, 2026);
 			var lista = FolhaDAO.historicoFuncionario(c, 1, 1);
-			assertEquals(11, inteiro(lista.get(0).get("mes")));
-			assertEquals(9, inteiro(lista.get(lista.size() - 1).get("mes")));
+			assertEquals(12, inteiro(lista.get(0).get("mes")));
+			assertEquals(9, inteiro(lista.get(2).get("mes")));
 		}
 	}
 }
