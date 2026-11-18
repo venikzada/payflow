@@ -299,11 +299,8 @@ public class Beneficio {
 
 		String resposta = Leitor.lerObrigatorio(sc, "Tem certeza que quer remover? (s/n): ");
 		if (resposta.equalsIgnoreCase("s")) {
-			PreparedStatement stmt = conn.prepareStatement(
-					"UPDATE funcionarios_beneficios SET ativo = 0 WHERE id = ? AND funcionario_id = ?");
-			stmt.setInt(1, fbId);
-			stmt.setInt(2, funcionarioId);
-			stmt.executeUpdate();
+			// Mesma regra da versão web (não esbarra no índice único com um vínculo inativo antigo)
+			BeneficioDAO.remover(conn, empresaId, fbId, LocalDate.now());
 			System.out.println("Benefício removido com sucesso!");
 		} else {
 			System.out.println("Nada foi removido.");

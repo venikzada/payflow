@@ -20,7 +20,7 @@ public class FuncionarioMenu {
 
 	// Lista os funcionários da empresa e devolve o ID do escolhido (0 se não achar)
 	public static int escolherFuncionario(Scanner sc, Connection conn, int empresaId) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("SELECT id, nome FROM funcionarios WHERE empresa_id = ?");
+		PreparedStatement stmt = conn.prepareStatement("SELECT id, nome FROM funcionarios WHERE empresa_id = ? AND ativo = 1");
 		stmt.setInt(1, empresaId);
 		ResultSet rs = stmt.executeQuery();
 
@@ -43,7 +43,7 @@ public class FuncionarioMenu {
 			return 0;
 		}
 
-		PreparedStatement stmtOk = conn.prepareStatement("SELECT 1 FROM funcionarios WHERE id = ? AND empresa_id = ?");
+		PreparedStatement stmtOk = conn.prepareStatement("SELECT 1 FROM funcionarios WHERE id = ? AND empresa_id = ? AND ativo = 1");
 		stmtOk.setInt(1, id);
 		stmtOk.setInt(2, empresaId);
 		if (!stmtOk.executeQuery().next()) {
@@ -248,7 +248,7 @@ public class FuncionarioMenu {
 		}
 
 		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT nome, cargo, data_admissao FROM funcionarios WHERE empresa_id = ? ORDER BY nome");
+				"SELECT nome, cargo, data_admissao FROM funcionarios WHERE empresa_id = ? AND ativo = 1 ORDER BY nome");
 		stmt.setInt(1, empresaId);
 		ResultSet rs = stmt.executeQuery();
 
@@ -313,7 +313,12 @@ public class FuncionarioMenu {
 
 	// Calcula há quanto tempo a pessoa está na empresa (só mostra o que não é zero)
 	public static String tempoDeEmpresa(LocalDate admissao) {
-		Period p = Period.between(admissao, LocalDate.now());
+		return tempoDeEmpresa(admissao, LocalDate.now());
+	}
+
+	// Mesma conta, com a data de "hoje" informada (usada pela versão web e pelos testes)
+	public static String tempoDeEmpresa(LocalDate admissao, LocalDate hoje) {
+		Period p = Period.between(admissao, hoje);
 		if (p.isNegative()) {
 			return "ainda não começou";
 		}
