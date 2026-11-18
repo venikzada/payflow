@@ -18,6 +18,10 @@ test("numeroBR", () => {
   assert.equal(f.numeroBR("3500.00"), 3500);
   assert.equal(f.numeroBR("R$ 2.300,00"), 2300);
   assert.ok(Number.isNaN(f.numeroBR("abc")));
+  assert.equal(f.numeroBR("3.500"), 3500);
+  assert.equal(f.numeroBR("R$ 2.500"), 2500);
+  assert.equal(f.numeroBR("1.5"), 1.5);
+  assert.ok(Number.isNaN(f.numeroBR("1e3")));
 });
 
 test("documentos e datas", () => {

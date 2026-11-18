@@ -135,4 +135,13 @@ class ApiFuncionariosTest {
 	void cargos() {
 		assertTrue(cli.get("/api/cargos").tem("Analista Financeiro"));
 	}
+
+	// Revisão final: "3.500" é três mil e quinhentos, não R$ 3,50
+	@Test
+	void salarioComPontoDeMilhar() {
+		var r = cli.put("/api/funcionarios/1", "nome", "João da Silva", "cpf", "52998224725", "email", "joao.silva@facilities.com.br",
+				"data_nascimento", "1995-05-20", "data_admissao", "2026-01-10", "cargo", "Auxiliar Administrativo", "salario_base", "3.500");
+		assertEquals(200, r.status(), r.corpo());
+		assertTrue(cli.get("/api/funcionarios/1").tem("\"salario_base\":3500"));
+	}
 }

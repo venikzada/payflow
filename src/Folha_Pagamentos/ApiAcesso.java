@@ -56,6 +56,7 @@ final class ApiAcesso {
 			EmpresaDAO.validarSenha(r.texto("senha"));
 			conferirConfirmacao(r);
 			EmpresaDAO.redefinirSenha(r.conn, r.texto("cnpj"), r.texto("email"), r.texto("telefone"), r.texto("senha"));
+			sessoes.limparFalhas(cnpj(r));
 			return Map.of("ok", true);
 		});
 

@@ -88,4 +88,26 @@ class ApiBeneficiosTest {
 		assertEquals(404, b.delete("/api/funcionarios-beneficios/1").status());
 		assertEquals(404, b.get("/api/beneficios/limite?funcionario_id=1&beneficio_id=1&valor=300&percentual=0").status());
 	}
+
+	// Revisão final: desconto não pode passar do limite por arredondamento (VT R$ 100 com salário R$ 1.800 → máx. 5,5555%)
+	@Test
+	void descontoNaoPassaDoLimitePorArredondamento() {
+		var f = cli.post("/api/funcionarios", "nome", "Lia Prado", "cpf", "111.444.777-35", "email", "lia@facilities.com.br",
+				"data_nascimento", "2000-01-01", "data_admissao", "2026-01-05", "cargo", "Auxiliar Administrativo", "salario_base", "1800");
+		String id = f.corpo().replaceAll("\\D", "");
+		assertTrue(cli.get("/api/beneficios/limite?funcionario_id=" + id + "&beneficio_id=1&valor=100&percentual=0").tem("\"percentual_maximo\":5.55"));
+		var acima = cli.post("/api/funcionarios/" + id + "/beneficios", "beneficio_id", "1", "valor", "100", "percentual", "5,56");
+		assertEquals(400, acima.status(), acima.corpo());
+		assertTrue(acima.tem("Digite entre 0 e 5,55."));
+		assertEquals(201, cli.post("/api/funcionarios/" + id + "/beneficios", "beneficio_id", "1", "valor", "100", "percentual", "5,55").status());
+		assertTrue(cli.get("/api/funcionarios/" + id + "/beneficios").tem("\"desconto_folha\":99.9"));
+	}
+
+	// Revisão final: valor com ponto de milhar
+	@Test
+	void valorComPontoDeMilhar() {
+		var r = cli.post("/api/funcionarios/1/beneficios", "beneficio_id", "5", "valor", "1.200", "percentual", "0");
+		assertEquals(201, r.status(), r.corpo());
+		assertTrue(cli.get("/api/funcionarios/1/beneficios").tem("\"valor\":1200"));
+	}
 }

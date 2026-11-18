@@ -50,6 +50,15 @@ public final class FolhaDAO {
 		if (he50 < 0 || he100 < 0 || diasFalta < 0 || horasAtraso < 0) {
 			throw ErroNegocio.invalido("Horas extras, faltas e atrasos não podem ser negativos.");
 		}
+		if (he50 > CalculoFolha.HORAS_MES || he100 > CalculoFolha.HORAS_MES) {
+			throw ErroNegocio.invalido("Horas extras não podem passar de 220 no mês.");
+		}
+		if (diasFalta > CalculoFolha.DIAS_MES) {
+			throw ErroNegocio.invalido("Dias de falta não podem passar de 30.");
+		}
+		if (horasAtraso > CalculoFolha.HORAS_MES) {
+			throw ErroNegocio.invalido("Horas de atraso não podem passar de 220.");
+		}
 		Map<String, Object> f = primeira(c,
 				"SELECT salario_base FROM funcionarios WHERE id = ? AND empresa_id = ? AND ativo = 1", funcionarioId,
 				empresaId);

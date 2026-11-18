@@ -92,7 +92,7 @@ public final class CalculoFolha {
 		// Faltas e atrasos diminuem a base dos impostos
 		double faltas = centavos(salario / DIAS_MES * e.diasFalta());
 		double atrasos = centavos(valorHora * e.horasAtraso());
-		double base = centavos(totalProventos - faltas - atrasos);
+		double base = Math.max(0, centavos(totalProventos - faltas - atrasos));
 
 		// Impostos (mesmas regras do console)
 		descontos impostos = new descontos();

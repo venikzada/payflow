@@ -116,4 +116,15 @@ class ServidorTest {
 		cli.post("/api/acesso/sair");
 		assertEquals(401, cli.get("/api/acesso/eu").status());
 	}
+
+	// Revisão final: redefinir a senha tira o bloqueio de login
+	@Test
+	void redefinirSenhaTiraBloqueio() {
+		for (int i = 0; i < 3; i++) {
+			cli.post("/api/acesso/entrar", "cnpj", "12345678000199", "senha", "errada");
+		}
+		assertEquals(200, cli.post("/api/acesso/redefinir", "cnpj", "12345678000199", "email", "contato@facilities.com.br",
+				"telefone", "(31) 3333-4444", "senha", "novasenha", "confirmacao", "novasenha").status());
+		assertEquals(200, cli.post("/api/acesso/entrar", "cnpj", "12345678000199", "senha", "novasenha").status());
+	}
 }

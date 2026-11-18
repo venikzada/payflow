@@ -118,4 +118,28 @@ class ConsoleTest {
 	void tempoDeEmpresaComData() {
 		assertEquals("10 meses e 4 dias", FuncionarioMenu.tempoDeEmpresa(LocalDate.of(2026, 1, 10), LocalDate.of(2026, 11, 14)));
 	}
+
+	// Revisão final: "3.500" e números só em formato brasileiro
+	@Test
+	void numeroBRComMilhar() {
+		assertEquals(3500.0, Leitor.numeroBR("3.500"));
+		assertEquals(1234567.0, Leitor.numeroBR("1.234.567"));
+		assertEquals(1.5, Leitor.numeroBR("1.5"));
+		assertThrows(NumberFormatException.class, () -> Leitor.numeroBR("1e3"));
+		assertThrows(NumberFormatException.class, () -> Leitor.numeroBR("10d"));
+		assertThrows(NumberFormatException.class, () -> Leitor.numeroBR("0x1p4"));
+	}
+
+	// Revisão final: remover pelo console um benefício que já foi removido antes (pela web) não pode derrubar o console
+	@Test
+	void consoleRemoveBeneficioJaRemovidoAntes() throws Exception {
+		try (Connection c = BancoTeste.novo()) {
+			int a = BeneficioDAO.atribuir(c, 1, 1, 5, 50, 0, LocalDate.of(2026, 11, 14));
+			BeneficioDAO.remover(c, 1, a, LocalDate.of(2026, 11, 14));
+			int b = BeneficioDAO.atribuir(c, 1, 1, 5, 50, 0, LocalDate.of(2026, 11, 14));
+			String s = capturar(() -> Beneficio.removerBeneficio(scanner("1\n" + b + "\ns\n"), c, 1));
+			assertTrue(s.contains("Benefício removido com sucesso!"), s);
+			assertEquals(0, inteiro(BancoTeste.valor(c, "SELECT COUNT(*) FROM funcionarios_beneficios WHERE funcionario_id=1 AND beneficio_id=5 AND ativo=1")));
+		}
+	}
 }

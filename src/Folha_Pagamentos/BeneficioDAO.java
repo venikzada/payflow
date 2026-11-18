@@ -68,10 +68,11 @@ public final class BeneficioDAO {
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("limite", limite);
 		m.put("base", base);
-		m.put("percentual_maximo", permite ? CalculoFolha.centavos(limite / base * 100) : 0.0);
+		// arredonda o máximo PARA BAIXO: com o máximo mostrado, o desconto nunca passa do limite
+		m.put("percentual_maximo", permite ? Math.floor(limite / base * 100 * 100 + 1e-6) / 100 : 0.0);
 		m.put("sobre", sobreValor ? "valor" : "salario");
 		m.put("permite_desconto", permite);
-		m.put("desconto", permite ? CalculoFolha.centavos(base * percentual / 100) : 0.0);
+		m.put("desconto", permite ? Math.min(CalculoFolha.centavos(base * percentual / 100), limite) : 0.0);
 		return m;
 	}
 

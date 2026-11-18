@@ -88,6 +88,11 @@ public class Leitor {
 		}
 		if (t.contains(",")) {
 			t = t.replace(".", "").replace(',', '.');
+		} else if (t.matches("-?\\d{1,3}(\\.\\d{3})+")) {
+			t = t.replace(".", ""); // "3.500" é três mil e quinhentos
+		}
+		if (!t.matches("-?(\\d+(\\.\\d+)?|\\.\\d+)")) {
+			throw new NumberFormatException(texto);
 		}
 		double valor = Double.parseDouble(t);
 		if (Double.isNaN(valor) || Double.isInfinite(valor)) {

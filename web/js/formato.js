@@ -24,6 +24,7 @@ export function numeroBR(texto) {
   let t = String(texto ?? "").replace(/R\$/g, "").replace(/\s/g, "");
   if (t === "") return 0;
   if (t.includes(",")) t = t.replace(/\./g, "").replace(",", ".");
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, ""); // "3.500" é três mil e quinhentos
   if (!/^-?\d*\.?\d+$/.test(t) && !/^-?\d+\.?$/.test(t)) return NaN;
   return Number(t);
 }

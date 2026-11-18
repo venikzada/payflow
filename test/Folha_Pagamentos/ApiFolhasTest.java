@@ -131,4 +131,16 @@ class ApiFolhasTest {
 		assertTrue(r.tem("\"liquido_total\":0"));
 		assertTrue(r.tem("\"variacao_liquido\":null"));
 	}
+
+	// Revisão final: faltas, atrasos e horas extras com limite do mês
+	@Test
+	void limitesDoMes() {
+		var f = cli.post("/api/folhas/simular", "funcionario_id", "1", "faltas", "45");
+		assertEquals(400, f.status());
+		assertTrue(f.tem("\"campo\":\"faltas\""));
+		assertEquals(400, cli.post("/api/folhas", "funcionario_id", "1", "faltas", "45").status());
+		assertTrue(cli.post("/api/folhas/simular", "funcionario_id", "1", "atrasos", "221").tem("\"campo\":\"atrasos\""));
+		assertTrue(cli.post("/api/folhas/simular", "funcionario_id", "1", "he50", "100000000").tem("\"campo\":\"he50\""));
+		assertEquals(200, cli.post("/api/folhas/simular", "funcionario_id", "1", "faltas", "30").status());
+	}
 }

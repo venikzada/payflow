@@ -103,4 +103,13 @@ class CalculoFolhaTest {
 		assertTrue(m.containsKey("linhas"));
 		assertTrue(m.containsKey("valor_hora"));
 	}
+
+	// Revisão final: faltas e atrasos nunca deixam a base negativa
+	@Test
+	void baseNuncaNegativa() {
+		var r = calc(2500, 0, 0, 30, 10, List.of());
+		assertEquals(0.0, r.baseTributavel());
+		assertEquals(0.0, r.fgts());
+		assertEquals(0.0, r.inss());
+	}
 }
