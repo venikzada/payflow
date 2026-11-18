@@ -1,4 +1,4 @@
-// Formatação de valores para exibir na tela (só formata — nenhuma conta da folha é feita aqui)
+// Formatação de valores para exibir na tela (só formata: nenhuma conta da folha é feita aqui)
 
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 

@@ -27,7 +27,7 @@ function montar() {
           <div class="field"><label for="funcionario">Funcionário</label>
             <select class="input" id="funcionario" name="funcionario_id">
               <option value="">Escolha um funcionário</option>
-              ${funcionarios.map((f) => `<option value="${f.id}">${h(f.nome)} — ${h(f.cargo)}</option>`).join("")}
+              ${funcionarios.map((f) => `<option value="${f.id}">${h(f.nome)} · ${h(f.cargo)}</option>`).join("")}
             </select></div>
           <div class="bloco" id="cartao-funcionario" hidden></div>
           <div class="grid g-2" style="gap:16px">
