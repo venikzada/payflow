@@ -160,7 +160,9 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;utf8,
 .yaxis { display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; color: var(--text-2); height: 180px; line-height: 0; }
 .cols { position: relative; height: 180px; display: flex; align-items: flex-end; justify-content: space-around; gap: 10px;
   background: repeating-linear-gradient(to top, #DCDCDC 0 1px, transparent 1px 60px); border-top: 1px dashed #DCDCDC; }
-.colw { display: flex; flex-direction: column; gap: 4px; width: 40px; max-width: 14%; }
+.colw { display: flex; flex-direction: column; gap: 4px; flex: 1 1 0; max-width: 40px; min-width: 0; }
+.cols { min-width: 0; overflow: hidden; }
+.plot { min-width: 0; }
 .seg-o { border-radius: 8px; background: repeating-linear-gradient(-45deg, var(--accent) 0 4px, #F58A62 4px 7px); }
 .seg-k { border-radius: 8px; background: var(--ink); }
 .xaxis { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-2); margin: 8px 0 0 42px; }
