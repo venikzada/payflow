@@ -148,6 +148,17 @@ export function montarPagina(ativa, { titulo, subtitulo = "", acoes = "" } = {})
     })
     .catch(() => {});
 
+  // Recado deixado pela tela anterior (ex.: "Fulano foi excluído.")
+  try {
+    const recado = sessionStorage.getItem("aviso");
+    if (recado) {
+      sessionStorage.removeItem("aviso");
+      setTimeout(() => aviso(recado), 50);
+    }
+  } catch {
+    /* sem sessionStorage: só não mostra o recado */
+  }
+
   return document.getElementById("principal");
 }
 
