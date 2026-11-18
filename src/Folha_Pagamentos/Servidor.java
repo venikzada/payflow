@@ -38,6 +38,7 @@ public final class Servidor {
 		ApiAcesso.registrar(rotas, sessoes);
 		ApiFuncionarios.registrar(rotas);
 		ApiFolhas.registrar(rotas);
+		ApiBeneficios.registrar(rotas);
 
 		HttpServer servidor = HttpServer.create(new InetSocketAddress(porta), 0);
 		servidor.createContext("/api/", rotas);
