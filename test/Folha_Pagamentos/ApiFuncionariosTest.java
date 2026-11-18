@@ -106,14 +106,16 @@ class ApiFuncionariosTest {
 
 	@Test
 	void editarMantendoProprioCpf() {
-		assertEquals(200, cli.put("/api/funcionarios/1", joao("João da Silva Santos", "52998224725")).status());
+		var r = cli.put("/api/funcionarios/1", joao("João da Silva Santos", "52998224725"));
+		assertEquals(200, r.status(), r.corpo());
 		assertTrue(cli.get("/api/funcionarios/1").tem("João da Silva Santos"));
 		assertEquals(409, cli.put("/api/funcionarios/1", joao("João", "16899535009")).status());
 	}
 
 	@Test
 	void excluirComFolhaDesliga() {
-		assertTrue(cli.delete("/api/funcionarios/2").tem("DESLIGADO"));
+		var d = cli.delete("/api/funcionarios/2");
+		assertTrue(d.tem("DESLIGADO"), d.status() + " " + d.corpo());
 		assertEquals(5, cli.get("/api/funcionarios").conta("\"cpf\":"));
 		assertTrue(cli.get("/api/funcionarios/2").tem("\"ativo\":false"));
 	}

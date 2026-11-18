@@ -29,7 +29,7 @@ final class ServidorTeste implements AutoCloseable {
 	ServidorTeste() throws Exception {
 		urlBanco = BancoTeste.url(BancoTeste.novoArquivo());
 		servidor = Servidor.iniciar(0, urlBanco, Path.of("web"), RELOGIO);
-		url = "http://localhost:" + servidor.getAddress().getPort();
+		url = "http://127.0.0.1:" + servidor.getAddress().getPort();
 	}
 
 	Cliente cliente() {

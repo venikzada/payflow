@@ -2,6 +2,7 @@ package Folha_Pagamentos;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,7 +41,8 @@ public final class Servidor {
 		ApiFolhas.registrar(rotas);
 		ApiBeneficios.registrar(rotas);
 
-		HttpServer servidor = HttpServer.create(new InetSocketAddress(porta), 0);
+		// Só no próprio computador (127.0.0.1): evita dividir a porta com outro programa e não expõe o sistema na rede
+		HttpServer servidor = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), porta), 0);
 		servidor.createContext("/api/", rotas);
 		Path raiz = pastaWeb.toAbsolutePath().normalize();
 		servidor.createContext("/", troca -> arquivo(troca, raiz));

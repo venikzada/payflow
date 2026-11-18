@@ -32,6 +32,15 @@ class ServidorTest {
 		assertEquals(404, cli.get("/naoexiste.html").status());
 	}
 
+	// Se outro programa já usa a porta em 127.0.0.1, o servidor não pode abrir "por cima" dela
+	@Test
+	void naoDividePortaComOutroProgramaNoLoopback() throws Exception {
+		try (var ocupada = new java.net.ServerSocket(0, 50, java.net.InetAddress.getLoopbackAddress())) {
+			assertThrows(java.net.BindException.class, () -> Servidor.iniciar(ocupada.getLocalPort(),
+					BancoTeste.url(BancoTeste.novoArquivo()), java.nio.file.Path.of("web"), ServidorTeste.RELOGIO));
+		}
+	}
+
 	@Test
 	void semLogin401() {
 		var r = cli.get("/api/acesso/eu");
