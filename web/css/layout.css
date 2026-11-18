@@ -115,7 +115,9 @@
 }
 
 /* ---------- impressão: só o holerite ---------- */
+.so-imprimir { display: none; }
 @media print {
+  .so-imprimir { display: block; }
   body { background: #fff; }
   body * { visibility: hidden; }
   .imprimir, .imprimir * { visibility: visible; }

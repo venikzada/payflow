@@ -1,6 +1,6 @@
 // Desenha o holerite (prévia da simulação ou folha já gravada)
-import { h } from "./app.js";
-import { moeda, moedaPartes, numero } from "./formato.js";
+import { h, api, abrirModal, icone, aviso } from "./app.js";
+import { moeda, moedaPartes, numero, mesAno, cnpj } from "./formato.js";
 
 function ehDesconto(l) {
   return l.tipo ? l.tipo === "DESCONTO" : Boolean(l.desconto);
@@ -25,7 +25,7 @@ function linha(l) {
 const STATUS = { PENDENTE: ["st-pend", "Pendente"], CONFIRMADA: ["st-ok", "Confirmada"] };
 
 // dados: paraMapa() da simulação (linhas com "desconto") ou holerite gravado (linhas com "tipo")
-export function renderizarHolerite(dados, { titulo = "Holerite", subtitulo = "", status = null, imprimir = false } = {}) {
+export function renderizarHolerite(dados, { titulo = "Holerite", subtitulo = "", status = null, imprimir = false, empresa = "" } = {}) {
   const linhas = dados.linhas || [];
   const proventos = linhas.filter((l) => !ehDesconto(l));
   const descontos = linhas.filter(ehDesconto);
@@ -35,6 +35,7 @@ export function renderizarHolerite(dados, { titulo = "Holerite", subtitulo = "",
   const liquido = moedaPartes(dados.salario_liquido);
   return `
     <div class="holerite ${imprimir ? "imprimir" : ""}">
+      ${empresa ? `<div class="hint so-imprimir" style="margin-bottom:12px">${h(empresa)}</div>` : ""}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px">
         <div><div class="panel-title">${h(titulo)}</div>${subtitulo ? `<div class="hint">${h(subtitulo)}</div>` : ""}</div>
         ${etiqueta}
@@ -51,4 +52,33 @@ export function renderizarHolerite(dados, { titulo = "Holerite", subtitulo = "",
         <div class="hint" style="font-size:13px;margin-top:4px">FGTS pago pela empresa: ${moeda(dados.valor_fgts)}</div>
       </div>
     </div>`;
+}
+
+// Busca uma folha gravada e mostra o holerite num modal, com botão de imprimir
+export async function abrirHolerite(id) {
+  let folha;
+  try {
+    folha = await api("GET", `/api/folhas/${id}`);
+  } catch (erro) {
+    aviso(erro.mensagem, "erro");
+    return;
+  }
+  const { el } = abrirModal(
+    `<div class="modal-topo nao-imprimir">
+       <span class="hint">${h(folha.empresa.nome_fantasia)} · CNPJ ${cnpj(folha.empresa.cnpj)}</span>
+       <div class="row">
+         <button class="icon-btn act" type="button" id="imprimir" title="Imprimir holerite" aria-label="Imprimir holerite">${icone("imprimir")}</button>
+         <button class="icon-btn act" type="button" data-fechar title="Fechar" aria-label="Fechar">${icone("x")}</button>
+       </div>
+     </div>
+     ${renderizarHolerite(folha, {
+       titulo: `Holerite · ${mesAno(folha.mes, folha.ano)}`,
+       subtitulo: `${folha.funcionario.nome} · ${folha.funcionario.cargo}`,
+       status: folha.status,
+       imprimir: true,
+       empresa: `${folha.empresa.nome_fantasia} · CNPJ ${cnpj(folha.empresa.cnpj)}`,
+     })}`,
+    { largo: false },
+  );
+  el.querySelector("#imprimir").addEventListener("click", () => window.print());
 }
