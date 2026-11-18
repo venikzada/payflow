@@ -36,6 +36,7 @@ public final class Servidor {
 		Sessoes sessoes = new Sessoes(relogio);
 		Roteador rotas = new Roteador(urlBanco, sessoes, relogio);
 		ApiAcesso.registrar(rotas, sessoes);
+		ApiFuncionarios.registrar(rotas);
 
 		HttpServer servidor = HttpServer.create(new InetSocketAddress(porta), 0);
 		servidor.createContext("/api/", rotas);
