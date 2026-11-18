@@ -318,4 +318,49 @@ public final class FolhaDAO {
 		m.put("totais", totais);
 		return m;
 	}
+
+	// ===================== RESUMO DO INÍCIO =====================
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> resumo(Connection c, int empresaId, int mes, int ano, java.time.LocalDate hoje)
+			throws SQLException {
+		YearMonth atual = YearMonth.of(ano, mes);
+		Map<String, Object> doMes = historicoMes(c, empresaId, mes, ano);
+		Map<String, Object> totais = (Map<String, Object>) doMes.get("totais");
+		YearMonth anterior = atual.minusMonths(1);
+		double liquidoAnterior = numero(((Map<String, Object>) historicoMes(c, empresaId, anterior.getMonthValue(),
+				anterior.getYear()).get("totais")).get("liquido"));
+		double liquido = numero(totais.get("liquido"));
+
+		List<Map<String, Object>> serie = new ArrayList<>();
+		for (int i = 5; i >= 0; i--) {
+			YearMonth ym = atual.minusMonths(i);
+			Map<String, Object> t = (Map<String, Object>) historicoMes(c, empresaId, ym.getMonthValue(), ym.getYear())
+					.get("totais");
+			Map<String, Object> item = new LinkedHashMap<>();
+			item.put("mes", ym.getMonthValue());
+			item.put("ano", ym.getYear());
+			item.put("liquido", t.get("liquido"));
+			item.put("descontos", t.get("descontos"));
+			serie.add(item);
+		}
+
+		Map<String, Object> ativos = primeira(c, "SELECT COUNT(*) AS n FROM funcionarios WHERE empresa_id = ? AND ativo = 1",
+				empresaId);
+
+		Map<String, Object> m = new LinkedHashMap<>();
+		m.put("mes", mes);
+		m.put("ano", ano);
+		m.put("liquido_total", liquido);
+		m.put("descontos_total", totais.get("descontos"));
+		m.put("fgts_total", totais.get("fgts"));
+		m.put("variacao_liquido",
+				liquidoAnterior == 0 ? null : (int) Math.round((liquido - liquidoAnterior) / liquidoAnterior * 100));
+		m.put("funcionarios", ((Number) ativos.get("n")).intValue());
+		m.put("em_experiencia", FuncionarioDAO.listar(c, empresaId, "experiencia", "", hoje).size());
+		m.put("pendentes", pendentes(c, empresaId).size());
+		m.put("serie", serie);
+		m.put("folhas", doMes.get("folhas"));
+		return m;
+	}
 }
