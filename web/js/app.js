@@ -214,6 +214,13 @@ export function mostrarErroCampo(form, erro) {
   msg.dataset.erro = "1";
   msg.textContent = erro.mensagem;
   (campo.closest(".field") || campo.parentElement).appendChild(msg);
+  // o erro some assim que a pessoa mexe no campo de novo
+  const limpar = () => {
+    campo.classList.remove("err");
+    msg.remove();
+  };
+  campo.addEventListener("input", limpar, { once: true });
+  campo.addEventListener("change", limpar, { once: true });
   campo.focus();
 }
 
