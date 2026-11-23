@@ -1,6 +1,8 @@
 # Payflow · Sistema de Folha de Pagamento
 
-Sistema de folha de pagamento em Java (console), com banco de dados SQLite, desenvolvido para o projeto final da disciplina de Garantia da Qualidade de Software (Una Contagem).
+Sistema de folha de pagamento em Java, com banco de dados SQLite, menu no console e versão web (HTML, CSS e JavaScript), desenvolvido para o projeto final da disciplina de Garantia da Qualidade de Software (Una Contagem).
+
+**Documento de apresentação completo (sistema, linguagens, banco, regras, testes e roteiro da demonstração): [APRESENTACAO.md](APRESENTACAO.md)**
 
 ## Problema
 
@@ -18,7 +20,7 @@ ODS 8 - Trabalho Decente e Crescimento Econômico.
 
 - Login da empresa por CNPJ e senha (hash SHA-256 com salt), com 3 tentativas
 - Cadastro de empresa e redefinição de senha
-- Cadastro e edição de funcionários (cargo e salário base)
+- Cadastro, edição de todos os dados e exclusão (ou desligamento) de funcionários
 - Cálculo da folha: INSS progressivo, IRRF 2026 e FGTS
 - Benefícios com desconto em % e limites:
   - Vale-transporte: até 6% do salário
