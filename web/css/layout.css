@@ -1,0 +1,131 @@
+/* ============================================================
+   Casca das telas: menu lateral claro (opção A), cabeçalho, grades,
+   modal, aviso, gaveta no celular e impressão
+   ============================================================ */
+
+.app { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+
+/* ---------- menu lateral ---------- */
+.menu {
+  position: sticky; top: 16px; margin: 16px 0 16px 16px; height: calc(100vh - 32px);
+  background: var(--surface); border-radius: var(--r-xl); padding: 18px 12px;
+  display: flex; flex-direction: column; gap: 4px; overflow-y: auto;
+}
+.marca { display: flex; align-items: center; gap: 10px; padding: 4px 10px 18px; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; text-decoration: none; }
+.marca b { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(155deg, var(--accent-hi), var(--accent-lo)); display: grid; place-items: center; color: #fff; flex: none; }
+.marca b svg { width: 17px; height: 17px; }
+.marca img { display: block; height: 30px; width: auto; }
+.acesso-form .marca img { height: 36px; }
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav a {
+  display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: var(--r-btn);
+  color: #4A4A4A; text-decoration: none; font-size: 15px; font-weight: 500;
+  transition: background-color var(--dur) ease, color var(--dur) ease;
+}
+.nav a:hover { background: #F1F1F1; color: var(--text); }
+.nav a.on { background: var(--ink); color: #fff; }
+.nav a .badge { margin-left: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: var(--pill); background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; display: inline-grid; place-items: center; }
+.nav a.on .badge { background: #fff; color: var(--ink); }
+.menu .espaco { flex: 1; }
+.empresa-cartao { background: var(--surface-2); border-radius: var(--r-md); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.empresa-cartao b { display: block; font-weight: 500; font-size: 14px; }
+.empresa-cartao span { font-size: 12px; color: var(--text-2); }
+
+/* ---------- conteúdo ---------- */
+.conteudo { padding: 28px 28px 48px; min-width: 0; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 6px 0 22px; flex-wrap: wrap; }
+.page-head h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.page-head p { margin: 4px 0 0; color: var(--text-2); font-size: 15px; }
+.page-head .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+.barra-topo { display: none; }
+
+.grid { display: grid; gap: 20px; }
+.g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g-side { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); align-items: start; }
+.stack { display: grid; gap: 20px; align-content: start; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.toolbar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.segmento { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- modal ---------- */
+.modal-fundo {
+  position: fixed; inset: 0; background: rgba(20,20,20,.38); display: grid; place-items: center; padding: 16px; z-index: 50;
+  animation: aparecer 140ms ease;
+}
+.modal { background: var(--surface); border-radius: var(--r-xl); padding: 24px; width: min(560px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,.18); }
+.modal.largo { width: min(720px, 100%); }
+.modal h2 { font-size: 20px; margin-bottom: 8px; }
+.modal p { color: var(--text-2); margin: 0 0 20px; line-height: 1.5; }
+.modal .acoes { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.modal-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+@keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- aviso (toast) ---------- */
+.avisos { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 60; }
+.aviso {
+  background: var(--ink); color: #fff; padding: 14px 18px; border-radius: var(--r-md); font-size: 15px; box-shadow: 0 12px 30px rgba(0,0,0,.2);
+  display: flex; align-items: center; gap: 10px; max-width: 380px; animation: subir 180ms ease;
+}
+.aviso::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; flex: none; }
+.aviso.erro::before { background: #FF8A8E; }
+@keyframes subir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- tela de acesso ---------- */
+.acesso { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; padding: 16px; }
+.acesso-form { background: var(--surface); border-radius: var(--r-xl); padding: 48px clamp(24px, 6vw, 88px); display: flex; flex-direction: column; justify-content: center; }
+.acesso-form .marca { padding: 0 0 36px; }
+.acesso-form h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+.acesso-form > p { color: var(--text-2); margin: 0 0 28px; }
+.abas { display: flex; gap: 4px; background: var(--surface-2); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+.abas button { flex: 1; height: 40px; border: 0; background: transparent; border-radius: var(--r-btn); font: inherit; font-size: 14px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: background-color var(--dur) ease, color var(--dur) ease; }
+.abas button:hover { color: var(--text); background: #EAEAEA; }
+.abas button.on { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.form { display: grid; gap: 16px; }
+/* o painel segue a proporção do cartaz (1122 × 1402) para ele aparecer sempre inteiro */
+.acesso-arte {
+  border-radius: var(--r-xl); overflow: hidden;
+  height: calc(100vh - 32px); aspect-ratio: 1122 / 1402; max-width: 55vw;
+  position: sticky; top: 16px;
+  background: #F05A28 url("/img/login.jpg") center / cover no-repeat;
+}
+
+/* ---------- celular: menu vira gaveta ---------- */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .menu { position: fixed; top: 0; left: 0; bottom: 0; margin: 0; height: 100vh; width: 280px; border-radius: 0 var(--r-xl) var(--r-xl) 0; z-index: 40; transform: translateX(-100%); transition: transform 200ms ease; }
+  .app.menu-aberto .menu { transform: none; box-shadow: 0 0 0 100vmax rgba(20,20,20,.35); }
+  .barra-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 30; background: var(--bg); padding: 12px 16px; }
+  .barra-topo .marca { padding: 0; }
+  .conteudo { padding: 8px 16px 40px; }
+  .g-2, .g-3, .g-side { grid-template-columns: 1fr; }
+  .g-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .acesso { grid-template-columns: 1fr; }
+  .acesso-arte { display: none; }
+  .acesso-form { padding: 32px 20px; }
+}
+@media (max-width: 520px) {
+  .g-4 { grid-template-columns: 1fr; }
+  .kpi { min-height: 0; gap: 18px; }
+  .page-head h1 { font-size: 24px; }
+}
+
+/* ---------- impressão: só o holerite ---------- */
+.so-imprimir { display: none; }
+@media print {
+  .so-imprimir { display: block; }
+  body { background: #fff; }
+  body * { visibility: hidden; }
+  .imprimir, .imprimir * { visibility: visible; }
+  .imprimir { position: absolute; left: 0; top: 0; width: 100%; padding: 0; }
+  .modal-fundo { background: none; }
+  .modal { box-shadow: none; }
+  .nao-imprimir { display: none !important; }
+}
+
+@media (max-width: 1100px) { #linha-2 { grid-template-columns: 1fr !important; } }
+
+/* abas pequenas (ex.: Barras | Linhas no gráfico do Início) */
+.abas.abas-sm { margin: 0; padding: 3px; }
+.abas.abas-sm button { flex: none; height: 32px; padding: 0 14px; font-size: 13px; }

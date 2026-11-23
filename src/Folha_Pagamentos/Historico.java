@@ -13,7 +13,9 @@ public class Historico {
 	// Consulta base do histórico (cada método acrescenta o seu WHERE)
 	private static final String SQL_HISTORICO = "SELECT e.nome_fantasia, e.cnpj, fp.mes, fp.ano, fu.nome, fu.cargo, "
 			+ "ff.salario_base, ff.total_proventos, ff.valor_inss, ff.valor_irpf, ff.total_descontos, "
-			+ "ff.salario_liquido, ff.valor_fgts, ff.status FROM folha_funcionarios ff "
+			+ "ff.salario_liquido, ff.valor_fgts, ff.status, "
+			+ "(SELECT COALESCE(SUM(lf.valor), 0) FROM lancamentos_folha lf WHERE lf.folha_funcionario_id = ff.id "
+			+ "AND lf.tipo_lancamento_id IN (13, 14)) AS faltas_atrasos FROM folha_funcionarios ff "
 			+ "JOIN folhas_pagamento fp ON fp.id = ff.folha_id " + "JOIN funcionarios fu ON fu.id = ff.funcionario_id "
 			+ "JOIN empresas e ON e.id = fu.empresa_id ";
 
@@ -110,8 +112,9 @@ public class Historico {
 
 			// Formata o CNPJ e calcula o total de benefícios descontados
 			String cnpj = rs.getString("cnpj").replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5");
+			double faltasAtrasos = rs.getDouble("faltas_atrasos");
 			double beneficios = rs.getDouble("total_descontos") - rs.getDouble("valor_inss")
-					- rs.getDouble("valor_irpf");
+					- rs.getDouble("valor_irpf") - faltasAtrasos;
 
 			// Mostra a folha
 			System.out.println();
@@ -130,6 +133,9 @@ public class Historico {
 			System.out.println("DESCONTOS");
 			System.out.println("INSS:            " + moeda.format(rs.getDouble("valor_inss")));
 			System.out.println("IRRF:            " + moeda.format(rs.getDouble("valor_irpf")));
+			if (faltasAtrasos > 0.005) {
+				System.out.println("Faltas/atrasos:  " + moeda.format(faltasAtrasos));
+			}
 			if (beneficios > 0.005) {
 				System.out.println("Benefícios:      " + moeda.format(beneficios));
 			}

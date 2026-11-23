@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · Payflow</title>
+  <link rel="icon" href="/img/payflow-marca.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/ds.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <script type="module" src="/js/paginas/acesso.js"></script>
+</head>
+<body>
+  <div class="acesso">
+    <section class="acesso-form">
+      <a class="marca" href="/"><img src="/img/payflow-logo.svg" alt="Payflow" width="149" height="36"></a>
+      <h1 id="acesso-titulo">Bem-vindo de volta</h1>
+      <p id="acesso-sub">Entre com o CNPJ e a senha da empresa.</p>
+
+      <div class="abas" role="tablist">
+        <button type="button" data-modo="entrar" class="on">Entrar</button>
+        <button type="button" data-modo="cadastrar">Cadastrar empresa</button>
+        <button type="button" data-modo="redefinir">Esqueci a senha</button>
+      </div>
+
+      <form class="form" id="form-entrar" data-form="entrar" novalidate>
+        <div class="field"><label for="cnpj">CNPJ</label><input class="input num" id="cnpj" name="cnpj" inputmode="numeric" autocomplete="username" placeholder="00.000.000/0000-00" data-mascara="cnpj"></div>
+        <div class="field"><label for="senha">Senha</label><input class="input" id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Sua senha"></div>
+        <div id="erro-acesso" class="erro-caixa" hidden></div>
+        <button class="btn btn-ink btn-full" id="entrar" type="submit">Entrar</button>
+      </form>
+
+      <form class="form" id="form-cadastrar" data-form="cadastrar" novalidate hidden>
+        <div class="field"><label>CNPJ</label><input class="input num" name="cnpj" inputmode="numeric" placeholder="00.000.000/0000-00" data-mascara="cnpj"></div>
+        <div class="field"><label>Razão social</label><input class="input" name="razao_social" placeholder="Empresa Exemplo LTDA"></div>
+        <div class="field"><label>Nome fantasia</label><input class="input" name="nome_fantasia" placeholder="Empresa Exemplo"></div>
+        <div class="grid g-2" style="gap:16px">
+          <div class="field"><label>E-mail</label><input class="input" name="email" type="email" placeholder="contato@empresa.com.br"></div>
+          <div class="field"><label>Telefone</label><input class="input num" name="telefone" inputmode="tel" placeholder="(31) 3333-4444" data-mascara="telefone"></div>
+        </div>
+        <div class="grid g-2" style="gap:16px">
+          <div class="field"><label>Senha</label><input class="input" name="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></div>
+          <div class="field"><label>Confirmar senha</label><input class="input" name="confirmacao" type="password" autocomplete="new-password"></div>
+        </div>
+        <button class="btn btn-ink btn-full" type="submit">Cadastrar empresa</button>
+      </form>
+
+      <form class="form" id="form-redefinir" data-form="redefinir" novalidate hidden>
+        <div class="field"><label>CNPJ</label><input class="input num" name="cnpj" inputmode="numeric" placeholder="00.000.000/0000-00" data-mascara="cnpj"></div>
+        <div class="grid g-2" style="gap:16px">
+          <div class="field"><label>E-mail da empresa</label><input class="input" name="email" type="email"></div>
+          <div class="field"><label>Telefone da empresa</label><input class="input num" name="telefone" inputmode="tel" data-mascara="telefone"></div>
+        </div>
+        <div class="grid g-2" style="gap:16px">
+          <div class="field"><label>Nova senha</label><input class="input" name="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></div>
+          <div class="field"><label>Confirmar nova senha</label><input class="input" name="confirmacao" type="password" autocomplete="new-password"></div>
+        </div>
+        <button class="btn btn-ink btn-full" type="submit">Redefinir senha</button>
+      </form>
+    </section>
+
+    <section class="acesso-arte" role="img" aria-label="Celular mostrando a tela inicial do sistema de folha de pagamento"></section>
+  </div>
+  <div class="avisos" id="avisos" aria-live="polite"></div>
+</body>
+</html>

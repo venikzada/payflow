@@ -80,6 +80,44 @@ public class Leitor {
 		return dv1 == cpf.charAt(9) - '0' && dv2 == cpf.charAt(10) - '0';
 	}
 	
+	// Converte número digitado do jeito brasileiro ("1,5", "1.234,56") ou com ponto ("3500.00"). Vazio vale 0.
+	public static double numeroBR(String texto) {
+		String t = texto == null ? "" : texto.trim();
+		if (t.isEmpty()) {
+			return 0;
+		}
+		if (t.contains(",")) {
+			t = t.replace(".", "").replace(',', '.');
+		} else if (t.matches("-?\\d{1,3}(\\.\\d{3})+")) {
+			t = t.replace(".", ""); // "3.500" é três mil e quinhentos
+		}
+		if (!t.matches("-?(\\d+(\\.\\d+)?|\\.\\d+)")) {
+			throw new NumberFormatException(texto);
+		}
+		double valor = Double.parseDouble(t);
+		if (Double.isNaN(valor) || Double.isInfinite(valor)) {
+			throw new NumberFormatException(texto);
+		}
+		return valor;
+	}
+
+	// Pede um número que pode ficar em branco (Enter = 0). Não aceita negativo.
+	public static double lerNumeroOpcional(Scanner sc, String texto) {
+		System.out.print(texto);
+		while (true) {
+			String linha = sc.hasNextLine() ? sc.nextLine() : "";
+			try {
+				double valor = numeroBR(linha);
+				if (valor >= 0) {
+					return valor;
+				}
+			} catch (NumberFormatException e) {
+				// pergunta de novo
+			}
+			System.out.print("Valor inválido. " + texto);
+		}
+	}
+
 	// Pede a senha (mínimo 6 caracteres) e a confirmação até as duas baterem
 	public static String lerSenhaComConfirmacao(Scanner sc) {
 		while (true) {

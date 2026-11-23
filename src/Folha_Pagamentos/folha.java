@@ -16,6 +16,9 @@ public class folha {
 
 		try (Connection conn = DriverManager.getConnection(url)) {
 
+			// Deixa o banco pronto (colunas novas, senha com hash etc.)
+			Banco.preparar(conn);
+
 			// Login ou cadastro da empresa
 			int empresaId = Empresa.menuInicial(sc, conn);
 

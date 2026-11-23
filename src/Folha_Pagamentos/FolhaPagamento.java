@@ -4,9 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -74,10 +75,7 @@ public class FolhaPagamento {
 			// Apaga a folha pendente depois de pedir confirmação
 			String resposta = Leitor.lerObrigatorio(sc, "Tem certeza que quer apagar? (s/n): ");
 			if (resposta.equalsIgnoreCase("s")) {
-				PreparedStatement stmtApagar = conn
-						.prepareStatement("DELETE FROM folha_funcionarios WHERE id = ? AND status = 'PENDENTE'");
-				stmtApagar.setInt(1, id);
-				stmtApagar.executeUpdate();
+				FolhaDAO.apagar(conn, empresaId, id);
 				System.out.println("Folha apagada com sucesso!");
 			} else {
 				System.out.println("Nada foi apagado.");
@@ -89,9 +87,9 @@ public class FolhaPagamento {
 
 	// Calcula e lança a folha de um funcionário (fica PENDENTE até confirmar)
 	public static void lancarFolha(Scanner sc, Connection conn, int empresaId) throws SQLException {
-		// Lista os funcionários da empresa
+		// Lista os funcionários ativos da empresa
 		PreparedStatement stmtListar = conn
-				.prepareStatement("SELECT id, nome, cargo FROM funcionarios WHERE empresa_id = ?");
+				.prepareStatement("SELECT id, nome, cargo FROM funcionarios WHERE empresa_id = ? AND ativo = 1");
 		stmtListar.setInt(1, empresaId);
 		ResultSet lista = stmtListar.executeQuery();
 
@@ -102,139 +100,70 @@ public class FolhaPagamento {
 
 		System.out.print("Digite o ID do funcionário: ");
 		int idEscolhido = sc.nextInt();
+		sc.nextLine();
 
-		// Busca os dados e o salário do funcionário escolhido
-		PreparedStatement stmtBuscar = conn
-				.prepareStatement("SELECT nome, cargo, salario_base FROM funcionarios WHERE id = ? AND empresa_id = ?");
-		stmtBuscar.setInt(1, idEscolhido);
-		stmtBuscar.setInt(2, empresaId);
-		ResultSet resultado = stmtBuscar.executeQuery();
+		// Pede horas extras, faltas e atrasos (Enter = 0)
+		double he50 = Leitor.lerNumeroOpcional(sc, "Horas extras 50% (Enter = 0): ");
+		double he100 = Leitor.lerNumeroOpcional(sc, "Horas extras 100% (Enter = 0): ");
+		double faltas = Leitor.lerNumeroOpcional(sc, "Dias de falta (Enter = 0): ");
+		double atrasos = Leitor.lerNumeroOpcional(sc, "Horas de atraso (Enter = 0): ");
 
-		if (!resultado.next()) {
-			System.out.println("Funcionário não encontrado.");
-			return;
-		}
-
-		proventos proventos = new proventos();
-		descontos descontos = new descontos();
-
-		proventos.SalarioBase = resultado.getDouble("salario_base");
-		proventos.TotalProventos = proventos.SalarioBase;
-		String nomeFuncionario = resultado.getString("nome");
-		String cargoFuncionario = resultado.getString("cargo");
-
-		// Busca o nome e o CNPJ da empresa para mostrar na folha
-		PreparedStatement stmtEmp = conn.prepareStatement("SELECT nome_fantasia, cnpj FROM empresas WHERE id = ?");
-		stmtEmp.setInt(1, empresaId);
-		ResultSet rsEmp = stmtEmp.executeQuery();
-		rsEmp.next();
-		String nomeEmpresa = rsEmp.getString("nome_fantasia");
-		String cnpjEmpresa = rsEmp.getString("cnpj").replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})",
-				"$1.$2.$3/$4-$5");
-
-		// Calcula INSS, IRRF e FGTS
-		descontos.InssDesconto(proventos.TotalProventos);
-		descontos.IrrfDesconto(proventos.TotalProventos, descontos.Inss);
-		descontos.FgtsDesconto(proventos.TotalProventos);
-		descontos.calcularTotalDescontos();
-
-		// Soma os descontos dos benefícios do funcionário
-		double totalBeneficios = 0;
-		StringBuilder linhasBeneficios = new StringBuilder();
-		NumberFormat moedaBen = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
-		PreparedStatement stmtBen = conn.prepareStatement(
-				"SELECT b.nome, fb.desconto_folha FROM funcionarios_beneficios fb JOIN beneficios b ON b.id = fb.beneficio_id WHERE fb.funcionario_id = ? AND fb.ativo = 1 AND fb.desconto_folha > 0");
-		stmtBen.setInt(1, idEscolhido);
-		ResultSet rsBen = stmtBen.executeQuery();
-		while (rsBen.next()) {
-			double desc = rsBen.getDouble("desconto_folha");
-			totalBeneficios += desc;
-			linhasBeneficios.append(rsBen.getString("nome") + ": " + moedaBen.format(desc) + "\n");
-		}
-		double totalDescontos = descontos.TotalDescontos + totalBeneficios;
-		double salarioLiquido = proventos.TotalProventos - totalDescontos;
-
-		// Usa a folha do mês/ano atual, ou cria uma nova se não existir
+		// Calcula e grava usando as mesmas regras da versão web
 		LocalDate hoje = LocalDate.now();
-		int mes = hoje.getMonthValue();
-		int ano = hoje.getYear();
-		String dataPagamento = hoje.withDayOfMonth(hoje.lengthOfMonth()).toString();
-
 		int folhaId;
-		PreparedStatement stmtBusca = conn
-				.prepareStatement("SELECT id FROM folhas_pagamento WHERE mes = ? AND ano = ?");
-		stmtBusca.setInt(1, mes);
-		stmtBusca.setInt(2, ano);
-		ResultSet rsFolha = stmtBusca.executeQuery();
-
-		if (rsFolha.next()) {
-			folhaId = rsFolha.getInt("id");
-		} else {
-			PreparedStatement stmtFolha = conn.prepareStatement(
-					"INSERT INTO folhas_pagamento (mes, ano, data_pagamento, status) VALUES (?, ?, ?, ?)",
-					Statement.RETURN_GENERATED_KEYS);
-			stmtFolha.setInt(1, mes);
-			stmtFolha.setInt(2, ano);
-			stmtFolha.setString(3, dataPagamento);
-			stmtFolha.setString(4, "ABERTA");
-			stmtFolha.executeUpdate();
-			ResultSet chave = stmtFolha.getGeneratedKeys();
-			chave.next();
-			folhaId = chave.getInt(1);
-		}
-
-		// Não deixa lançar duas vezes o mesmo funcionário no mês
-		PreparedStatement stmtJa = conn
-				.prepareStatement("SELECT 1 FROM folha_funcionarios WHERE folha_id = ? AND funcionario_id = ?");
-		stmtJa.setInt(1, folhaId);
-		stmtJa.setInt(2, idEscolhido);
-		if (stmtJa.executeQuery().next()) {
-			System.out.println("Esse funcionário já foi lançado neste mês. Veja a folha dele na opção 3 (Histórico).");
+		try {
+			CalculoFolha.Entrada entrada = FolhaDAO.montarEntrada(conn, empresaId, idEscolhido, he50, he100, faltas,
+					atrasos);
+			folhaId = FolhaDAO.lancar(conn, empresaId, idEscolhido, entrada, hoje.getMonthValue(), hoje.getYear());
+		} catch (ErroNegocio e) {
+			if (e.status() == 409) {
+				System.out.println(e.getMessage() + " Veja a folha dele na opção 3 (Histórico).");
+			} else {
+				System.out.println(e.getMessage());
+			}
 			return;
 		}
 
-		// Salva a folha do funcionário como PENDENTE
-		PreparedStatement stmtFolhaFunc = conn.prepareStatement(
-				"INSERT INTO folha_funcionarios (folha_id, funcionario_id, salario_base, total_proventos, salario_bruto, base_inss, valor_inss, base_fgts, valor_fgts, base_irpf, valor_irpf, total_descontos, salario_liquido, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDENTE')");
-		stmtFolhaFunc.setInt(1, folhaId);
-		stmtFolhaFunc.setInt(2, idEscolhido);
-		stmtFolhaFunc.setDouble(3, proventos.SalarioBase);
-		stmtFolhaFunc.setDouble(4, proventos.TotalProventos);
-		stmtFolhaFunc.setDouble(5, proventos.TotalProventos);
-		stmtFolhaFunc.setDouble(6, proventos.TotalProventos);
-		stmtFolhaFunc.setDouble(7, descontos.Inss);
-		stmtFolhaFunc.setDouble(8, proventos.TotalProventos);
-		stmtFolhaFunc.setDouble(9, descontos.Fgts);
-		stmtFolhaFunc.setDouble(10, proventos.TotalProventos - descontos.Inss);
-		stmtFolhaFunc.setDouble(11, descontos.Irrf);
-		stmtFolhaFunc.setDouble(12, totalDescontos);
-		stmtFolhaFunc.setDouble(13, salarioLiquido);
-		stmtFolhaFunc.executeUpdate();
+		imprimirHolerite(FolhaDAO.holerite(conn, empresaId, folhaId));
+	}
 
-		// Mostra a folha na tela
+	// Mostra o holerite na tela
+	@SuppressWarnings("unchecked")
+	static void imprimirHolerite(Map<String, Object> h) {
 		NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+		Map<String, Object> empresa = (Map<String, Object>) h.get("empresa");
+		Map<String, Object> funcionario = (Map<String, Object>) h.get("funcionario");
+		List<Map<String, Object>> linhas = (List<Map<String, Object>>) h.get("linhas");
+		String cnpj = ((String) empresa.get("cnpj")).replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})",
+				"$1.$2.$3/$4-$5");
 
 		System.out.println();
 		System.out.println("=========== FOLHA DE PAGAMENTO ===========");
-		System.out.println("Empresa: " + nomeEmpresa);
-		System.out.println("CNPJ: " + cnpjEmpresa);
-		System.out.println("Referência: " + String.format("%02d/%d", mes, ano));
-		System.out.println("Funcionário: " + nomeFuncionario);
-		System.out.println("Cargo: " + cargoFuncionario);
+		System.out.println("Empresa: " + empresa.get("nome_fantasia"));
+		System.out.println("CNPJ: " + cnpj);
+		System.out.println("Referência: " + String.format("%02d/%d", h.get("mes"), h.get("ano")));
+		System.out.println("Funcionário: " + funcionario.get("nome"));
+		System.out.println("Cargo: " + funcionario.get("cargo"));
 		System.out.println("------------------------------------------");
 		System.out.println("PROVENTOS");
-		System.out.println("Salário Base:    " + moeda.format(proventos.SalarioBase));
-		System.out.println("Total Proventos: " + moeda.format(proventos.TotalProventos));
+		for (Map<String, Object> l : linhas) {
+			if ("PROVENTO".equals(l.get("tipo"))) {
+				System.out.println(String.format("%-17s", l.get("descricao") + ":") + moeda.format(l.get("valor")));
+			}
+		}
+		System.out.println("Total Proventos: " + moeda.format(h.get("total_proventos")));
 		System.out.println("------------------------------------------");
 		System.out.println("DESCONTOS");
-		System.out.println("INSS:            " + moeda.format(descontos.Inss));
-		System.out.println("IRRF:            " + moeda.format(descontos.Irrf));
-		System.out.print(linhasBeneficios);
-		System.out.println("Total descontos: " + moeda.format(totalDescontos));
+		for (Map<String, Object> l : linhas) {
+			if ("DESCONTO".equals(l.get("tipo"))) {
+				System.out.println(String.format("%-17s", l.get("descricao") + ":") + moeda.format(l.get("valor")));
+			}
+		}
+		System.out.println("Total descontos: " + moeda.format(h.get("total_descontos")));
 		System.out.println("------------------------------------------");
-		System.out.println("SALÁRIO LÍQUIDO: " + moeda.format(salarioLiquido));
+		System.out.println("SALÁRIO LÍQUIDO: " + moeda.format(h.get("salario_liquido")));
 		System.out.println("------------------------------------------");
-		System.out.println("FGTS (empresa):  " + moeda.format(descontos.Fgts));
+		System.out.println("FGTS (empresa):  " + moeda.format(h.get("valor_fgts")));
 		System.out.println("==========================================");
 	}
 }
